@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import *
@@ -17,12 +19,18 @@ def deleteWorkRequests(request):
         id_list = request.POST.getlist('boxes')
         id_list = map(int, id_list)
 
-        requestToDelete = []
         for id in id_list:
-            requestToDelete.append(WorkRequest.objects.get(pk=id))
+            instance = WorkRequest.objects.get(id=id)
+            print(instance)
+            images = WorkRequestImage.objects.filter(request=instance)
+            print(images)
 
-        print(requestToDelete)
-        # delete code later
+            for image in images:
+                print(image.photo.path)
+                os.remove(image.photo.path)
+            # get the path to the photo and delte it
+
+            instance.delete()
 
         workrequest_list = WorkRequest.objects.all()
 
