@@ -1,3 +1,4 @@
+from django.urls import path
 from . import views
 
 #path function defines a url pattern
@@ -6,6 +7,5 @@ from . import views
 # name='index' parameter is to dynamically create url
 # example in html <a href="{% url 'index' %}">Home</a>.
 urlpatterns = [
-
-
+    path('', views.index, name='index'),
 ]
