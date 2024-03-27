@@ -5,19 +5,30 @@
 {% block content %}
 
 <h1>Work Request List</h1>
+<!--We need to make this a form we can send a post back to view.py and do checkbox stuff-->
+<form action="{% url 'delete-requests' %}" method="POST" onsubmit="return confirmDelete();">
+  {% csrf_token %}
+
 	{%if workrequest_list%}
 		<ul>
 			{% for workRequest in workrequest_list %}
-				<li>
+			<div>
+					<input class="form-check-input" type="checkbox" value={{workRequest.id}} name="boxes">
 					<a href="{{ workRequest.get_absolute_url}}"> {{ workRequest}}</a>
-				</li>
+			</div>
 			{% endfor %}
 		</ul>
 		{% else %}
 			<p>There are no work requests in the list</p>
 		{% endif %}
 
-<a class="btn btn-danger" href="#" role="button">Delete Seclected</a>
+<button class="btn btn-danger" type="submit">Delete Selected</button>
 <a class="btn btn-primary" href="#" role="button">Submit New Request</a>
+</form>
 
+<script>
+function confirmDelete() {
+    return confirm('Are you sure you want to delete the selected items?');
+}
+</script>
 {% endblock %}

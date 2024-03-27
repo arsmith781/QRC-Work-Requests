@@ -12,5 +12,6 @@ urlpatterns = [
     path('workrequests/', views.WorkRequestListView.as_view(), name='workrequests'),
     path('workrequest/<int:pk>', views.WorkRequestDetailView.as_view(), name='workrequest-detail'),
     # forgot password
-    path('forgotpassword/', views.forgotPassword, name='forgot-password')
+    path('forgotpassword/', views.forgotPassword, name='forgot-password'),
+    path('delete_requests/', views.deleteWorkRequests, name='delete-requests')
 ]
