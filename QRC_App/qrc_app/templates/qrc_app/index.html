@@ -7,10 +7,8 @@
 <h1>Temopory view will change</h1>
 <p>Username: input box here</p>
 <p>Password: input box here</p>
-<a class="btn btn-primary" href="#" role="button">Login</a>
-<a class="btn btn-danger" href="#" role="button">Forgot Password</a>
-
-
+<a class="btn btn-primary" href="{% url 'workrequests'%}" role="button">Login</a>
+<a class="btn btn-danger" href="{% url 'forgot-password' %}" role="button">Forgot Password</a>
 
 {% endblock %}
 
