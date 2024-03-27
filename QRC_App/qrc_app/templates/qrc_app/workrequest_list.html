@@ -1,0 +1,20 @@
+<!-- inherit from base.html-->
+{% extends "qrc_app/base_template.html" %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+
+<h1>Work Request List</h1>
+	{%if workrequest_list%}
+		<ul>
+			{% for workRequest in workrequest_list %}
+				<li>
+					<a href="{{ workRequest.get_absolute_url}}"> {{ workRequest}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+			<p>There are no work requests in the list</p>
+		{% endif %}
+
+{% endblock %}

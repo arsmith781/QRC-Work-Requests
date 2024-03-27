@@ -8,4 +8,8 @@ from . import views
 # example in html <a href="{% url 'index' %}">Home</a>.
 urlpatterns = [
     path('', views.index, name='index'),
+    # View for models
+    path('workrequests/', views.WorkRequestListView.as_view(), name='workrequests'),
+    path('workrequest/<int:pk>', views.WorkRequestDetailView.as_view(), name='workrequest-detail'),
+
 ]

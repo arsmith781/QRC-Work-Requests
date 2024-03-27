@@ -93,7 +93,7 @@ class WorkRequest(models.Model):
         return returnString
 
     def get_absolute_url(self):
-        return reverse('request-detail', args=[str(self.id)])
+        return reverse('workrequest-detail', args=[str(self.id)])
 
 
 class WorkRequestImage(models.Model):
