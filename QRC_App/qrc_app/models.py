@@ -6,6 +6,7 @@ from django.urls import reverse
 class WorkRequest(models.Model):
     task_number = models.IntegerField()
     submitter_name = models.CharField(max_length=200)
+    contact_info = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
 
     # First value is how to store option in the databse
@@ -99,7 +100,7 @@ class WorkRequest(models.Model):
 class WorkRequestImage(models.Model):
     # one to many for images
     request = models.ForeignKey(WorkRequest, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='request_photos/')
+    photo = models.ImageField(upload_to='qrc_app/request_photos/')
 
     def __str__(self):
         return f"Photo for {self.request.task_number}"

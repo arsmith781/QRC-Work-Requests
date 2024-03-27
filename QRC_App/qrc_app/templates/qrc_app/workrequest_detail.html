@@ -1,0 +1,28 @@
+<!-- inherit from base.html-->
+{% extends "qrc_app/base_template.html" %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+
+<h1>Work Request Detail</h1>
+
+<p><strong>Work Request: </strong> {{workrequest.task_number}}</p>
+<p><strong>Submitted By: </strong> {{workrequest.submitter_name}}</p>
+<p><strong>Contact Info: </strong> {{workrequest.contact_info}}</p>
+<p><strong>Date: </strong> {{workrequest.date}}</p>
+<p><strong>Location: </strong> {{workrequest.location}}</p>
+<p><strong>Sub Location: </strong> {{workrequest.sub_location}}</p>
+<p><strong>Description: </strong> {{workrequest.description}}</p>
+<p><strong>Type Of Issue: </strong> {{workrequest.type_of_issue}}</p>
+<p><strong>Assigned To: </strong> {{workrequest.assigned_worker}}</p>
+
+{% for photo in workrequest.workrequestimage_set.all %}
+    <div class="img-container" style="margin-bottom: 20px;">
+        <img src="{{ photo.photo.url }}" alt="Photo related to work request" style="max-width: 100%; height: auto;">
+    </div>
+{% empty %}
+    <p>No photos found.</p>
+{% endfor %}
+
+
+{% endblock %}
