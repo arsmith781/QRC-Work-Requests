@@ -60,7 +60,7 @@ def createWorkRequests(request):
                     photo = WorkRequestImage(request=request, photo=image)
                     photo.save()
 
-            # return to project list
+            # return to request list
             return redirect('workrequests')
     else:
         form = WorkRequestForm()
@@ -75,7 +75,42 @@ def createWorkRequests(request):
 
 
 def updateWorkRequests(request, request_id):
-    pass
+    workRequest = WorkRequest.objects.get(pk=request_id)
+    # this time we can delete (since we're editing)
+    ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=1, can_delete=True)
+    if request.method == 'POST':
+        # set the variables with form data
+        # intance creates a new form instead of a new one (without it, we get a copy)
+        form = WorkRequestForm(request.POST, instance=workRequest)
+        formset = ImageFormSet(request.POST, request.FILES, queryset=WorkRequestImage.objects.filter(request=workRequest))  # get the request info for the images
+
+        if form.is_valid() and formset.is_valid():  # need to check 2 forms now
+            # save work request. Need task number since it's not in the form
+            workRequestForm = form.save(commit=False)
+            workRequestForm.task_number = workRequest.task_number
+            workRequestForm.save()
+
+            photos = formset.save(commit=False)
+
+            # now we need to "connect" the forms by setting the new photos to be attached to the desired request
+            for photo in photos:
+                photo.request = workRequest
+                photo.save()
+
+            # if photo were deleted we gotta handle that both in the database AND the file system
+            # similar to deleteRequest but instead of the CASCADE handling deletion we are
+            for image in formset.deleted_objects:
+                os.remove(image.photo.path)
+                image.delete()
+
+            # return to detail of one being views
+            return redirect('workrequest-detail', pk=request_id)
+    else:
+        # upon get set the forms to the current request and the images in that request
+        form = WorkRequestForm(instance=workRequest)
+        formset = ImageFormSet(queryset=WorkRequestImage.objects.filter(request=workRequest))
+    context = {'form': form, 'formset': formset, 'nextTaskNumber': workRequest.task_number}
+    return render(request, 'qrc_app/workrequests_form.html', context)
 
 
 class WorkRequestListView(generic.ListView):
