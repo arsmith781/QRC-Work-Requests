@@ -1,0 +1,32 @@
+<!-- inherit from base.html-->
+{% extends "qrc_app/base_template.html" %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+
+<p><strong>Task Number: </strong> {{nextTaskNumber}}</p>
+
+<!--enctype tell is we are using 2 forms on one page-->
+<form action="" method="POST" onsubmit="return confirmDelete(); " enctype="multipart/form-data">
+
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}
+  </table>
+  {{ formset.management_form }}
+    {% for image_form in formset %}
+        {{ image_form.as_p }}
+    {% endfor %}
+<button class="btn btn-primary" type="submit">Submit</button>
+  <a class="btn btn-danger" href="{% url 'workrequests' %}" role="button">Cancel</a>
+  <p></p>
+  <p></p>
+</form>
+
+<script>
+function confirmDelete() {
+    return confirm('Are you sure you want to update the selected items?');
+}
+</script>
+
+{% endblock %}
