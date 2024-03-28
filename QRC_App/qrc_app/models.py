@@ -65,9 +65,21 @@ class WorkRequest(models.Model):
         ('Shower C', 'Shower C'),
     )
 
+    ROOMS = {
+        'Clark': CLARK_ROOMS,
+        'Turner': TURNER_ROOMS,
+        'Fell': FELL_ROOMS,
+        'Chapel': CHAPEL_ROOMS,
+        'Kinser': KINSER_ROOMS,
+        'Big Bear': BIGBEAR_ROOMS,
+        'Shower Houses': SHOWERHOUSE_ROOMS,
+    }
+
     location = models.CharField(max_length=200, choices=BUILDINGS)
+
     # these choices will change dynamically based on building information
-    sub_location = models.CharField(max_length=200, choices=CLARK_ROOMS)
+    # NOTE: in order to do this don't set the choices field
+    sub_location = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
     TYPE_OF_ISSUE = (
