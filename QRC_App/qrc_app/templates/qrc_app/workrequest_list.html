@@ -13,8 +13,10 @@
 		<ul>
 			{% for workRequest in workrequest_list %}
 			<div>
+				{% if not workRequest.is_closed %}
 					<input class="form-check-input" type="checkbox" value={{workRequest.id}} name="boxes">
 					<a href="{{ workRequest.get_absolute_url}}"> {{ workRequest}}</a>
+				{% endif %}
 			</div>
 			{% endfor %}
 		</ul>

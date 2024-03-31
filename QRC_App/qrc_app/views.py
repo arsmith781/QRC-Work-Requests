@@ -120,7 +120,7 @@ def closeWorkRequest(request, request_id):
     ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=1)
     if request.method == 'POST':
         print("posted")
-        form = WorkRequestCloseForm(request.POST)
+        form = WorkRequestCloseForm(request.POST, instance=workRequest)
         formset = ImageFormSet(request.POST, request.FILES, queryset=WorkRequestImage.objects.filter(request=workRequest))  # get the request info for the images
         if form.is_valid() and formset.is_valid():  # need to check 2 forms now
             print("valid")
