@@ -5,6 +5,7 @@ from .models import *
 from django.views import generic
 from .forms import *
 from django.forms import modelformset_factory  # this is so we can have 2 forms on one page
+from django.utils import timezone
 
 
 def index(request):
@@ -48,16 +49,16 @@ def createWorkRequests(request):
 
         if form.is_valid() and formset.is_valid():  # need to check 2 forms now
             # save work request (dont save so we can calculate the task numher
-            request = form.save(commit=False)
-            request.task_number = max([request.task_number for request in WorkRequest.objects.all()]) + 1
-            request.save()
+            workRequest = form.save(commit=False)
+            workRequest.task_number = max([request.task_number for request in WorkRequest.objects.all()]) + 1
+            workRequest.save()
 
             # go through the images in the imageform
             for form in formset.cleaned_data:
                 if form:
                     image = form['photo']
                     # create new image model with the new data
-                    photo = WorkRequestImage(request=request, photo=image)
+                    photo = WorkRequestImage(request=workRequest, photo=image)
                     photo.save()
 
             # return to request list
@@ -66,9 +67,10 @@ def createWorkRequests(request):
         form = WorkRequestForm()
         formset = ImageFormSet(queryset=WorkRequestImage.objects.none())
 
+    # autoincrement task number by 1
     allRequests = WorkRequest.objects.all()
     taskNumbers = [request.task_number for request in allRequests]
-    nextTaskNumber = max(taskNumbers) + 1  # autoincrement task number by 1
+    nextTaskNumber = max(taskNumbers) + 1
 
     context = {'form': form, 'formset': formset, 'nextTaskNumber': nextTaskNumber}
     return render(request, 'qrc_app/workrequests_form.html', context)
@@ -109,6 +111,49 @@ def updateWorkRequests(request, request_id):
         # upon get set the forms to the current request and the images in that request
         form = WorkRequestForm(instance=workRequest)
         formset = ImageFormSet(queryset=WorkRequestImage.objects.filter(request=workRequest))
+    context = {'form': form, 'formset': formset, 'nextTaskNumber': workRequest.task_number}
+    return render(request, 'qrc_app/workrequests_form.html', context)
+
+
+def closeWorkRequest(request, request_id):
+    workRequest = WorkRequest.objects.get(pk=request_id)
+    ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=1)
+    if request.method == 'POST':
+        print("posted")
+        form = WorkRequestCloseForm(request.POST)
+        formset = ImageFormSet(request.POST, request.FILES, queryset=WorkRequestImage.objects.filter(request=workRequest))  # get the request info for the images
+        if form.is_valid() and formset.is_valid():  # need to check 2 forms now
+            print("valid")
+            workRequestForm = form.save(commit=False)
+
+            # set the variables we didn't pass in the form
+            workRequestForm.task_number = workRequest.task_number
+            workRequestForm.submitter_name = workRequest.submitter_name
+            workRequestForm.contact_info = workRequest.contact_info
+            workRequestForm.date = workRequest.date
+            workRequestForm.location = workRequest.location
+            workRequestForm.description = workRequest.description
+            workRequestForm.type_of_issue = workRequest.type_of_issue
+            workRequestForm.assigned_worker = workRequest.assigned_worker
+            workRequestForm.is_closed = True
+            workRequestForm.close_date = timezone.now()  # set the time to the current time with the timezone in the settings
+            workRequestForm.save()
+
+            photos = formset.save(commit=False)
+
+            # now we need to "connect" the forms by setting the new photos to be attached to the desired request
+            for photo in photos:
+                photo.request = workRequest
+                photo.save()
+
+            # return to the list
+            return redirect('workrequests')
+    else:
+        # send some stuff to the form
+        # upon get set the forms to the current request and the images in that request
+        form = WorkRequestCloseForm(instance=workRequest)
+        formset = ImageFormSet(queryset=WorkRequestImage.objects.filter(request=workRequest))
+
     context = {'form': form, 'formset': formset, 'nextTaskNumber': workRequest.task_number}
     return render(request, 'qrc_app/workrequests_form.html', context)
 

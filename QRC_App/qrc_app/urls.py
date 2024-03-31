@@ -17,4 +17,5 @@ urlpatterns = [
     # Forms (CRUD)
     path('workrequest/create_request/', views.createWorkRequests, name='create-requests'),
     path('workrequest/update_request/<int:request_id>', views.updateWorkRequests, name='update-request'),
+    path('workrequest/close_request/<int:request_id>', views.closeWorkRequest, name='close-request'),
 ]

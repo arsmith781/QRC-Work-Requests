@@ -78,9 +78,9 @@ class WorkRequest(models.Model):
     location = models.CharField(max_length=200, choices=BUILDINGS)
 
     # these choices will change dynamically based on building information
-    # NOTE: in order to do this don't set the choices field
-    sub_location = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    # NOTE: in order to do this don't set the choices field AND see the comment in forms.py
+    sub_location = models.CharField(max_length=200, choices=CLARK_ROOMS)
+    description = models.TextField()
 
     TYPE_OF_ISSUE = (
         ('Plumbing', 'Plumbing'),
@@ -93,6 +93,9 @@ class WorkRequest(models.Model):
     type_of_issue = models.CharField(max_length=200, choices=TYPE_OF_ISSUE)
     assigned_worker = models.CharField(max_length=200, blank=True)  # optional
     is_closed = models.BooleanField(default=False)
+    close_note = models.TextField(blank=True)
+    close_date = models.DateTimeField(auto_now=True)
+
 
     # this is how you do a photo from computer in django
     # photo = models.ImageField(upload_to=f'requestPhotos/')
@@ -120,3 +123,4 @@ class WorkRequestImage(models.Model):
     # just in case we need this but I doubt it
     def get_absolute_url(self):
         return reverse('image-detail', args=[str(self.id)])
+

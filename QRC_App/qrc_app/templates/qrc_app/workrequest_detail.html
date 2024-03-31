@@ -6,8 +6,11 @@
 
 <h1>Work Request Detail</h1>
 <a class="btn btn-info"    href="{% url 'update-request' request_id=workrequest.id %}" role="button">Edit</a>
+<a class="btn btn-secondary"    href="{% url 'close-request' request_id=workrequest.id %}" role="button">Close</a>
+<a class="btn btn-danger" href="{% url 'workrequests' %}" role="button">Cancel</a>
+
 <p></p>
-<p><strong>Work Request: </strong> {{workrequest.task_number}}</p>
+<p><strong>Task Number: </strong> {{workrequest.task_number}}</p>
 <p><strong>Submitted By: </strong> {{workrequest.submitter_name}}</p>
 <p><strong>Contact Info: </strong> {{workrequest.contact_info}}</p>
 <p><strong>Date: </strong> {{workrequest.date}}</p>
