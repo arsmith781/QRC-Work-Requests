@@ -41,7 +41,7 @@ def deleteWorkRequests(request):
 
 
 def createWorkRequests(request):
-    # we need to have two forms in one since we want the user to be able to add images we well. 3 by default
+    # we need to have two forms in one since we want the user to be able to add images we well. 3 uploads by default
     ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=3)
     if request.method == 'POST':
         form = WorkRequestForm(request.POST)  # get the request info for the work request
