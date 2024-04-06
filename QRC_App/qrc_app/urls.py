@@ -12,5 +12,10 @@ urlpatterns = [
     path('workrequests/', views.WorkRequestListView.as_view(), name='workrequests'),
     path('workrequest/<int:pk>', views.WorkRequestDetailView.as_view(), name='workrequest-detail'),
     # forgot password
-    path('forgotpassword/', views.forgotPassword, name='forgot-password')
+    path('forgotpassword/', views.forgotPassword, name='forgot-password'),
+    path('delete_requests/', views.deleteWorkRequests, name='delete-requests'),
+    # Forms (CRUD)
+    path('workrequest/create_request/', views.createWorkRequests, name='create-requests'),
+    path('workrequest/update_request/<int:request_id>', views.updateWorkRequests, name='update-request'),
+    path('workrequest/close_request/<int:request_id>', views.closeWorkRequest, name='close-request'),
 ]

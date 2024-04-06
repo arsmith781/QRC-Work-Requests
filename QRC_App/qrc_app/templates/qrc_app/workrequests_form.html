@@ -1,0 +1,42 @@
+<!-- inherit from base.html-->
+{% extends "qrc_app/base_template.html" %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+
+<!--enctype tell is we are using 2 forms on one page-->
+<form action="" method="POST" onsubmit="return confirmDelete(); " enctype="multipart/form-data">
+<button class="btn btn-primary" type="submit">Submit</button>
+    <a class="btn btn-danger" href="{% url 'workrequests' %}" role="button">Cancel</a>
+
+  {% csrf_token %}
+    <p><strong>Task Number: </strong> {{nextTaskNumber}}</p>
+  <table>
+    {{ form.as_table }}
+  </table>
+  {{ formset.management_form }}
+    {% for image_form in formset %}
+        <div>
+            {% if image_form.instance.photo %}
+                <img src="{{ image_form.instance.photo.url }}" alt="Work Request Image" style="max-width: 100%; height: auto;">
+                <p></p>
+                {{ image_form.as_p }}
+            {% else %}
+                {{ image_form.as_p }}  <!-- The file input for new images -->
+            {% endif %}
+        </div>
+        <hr />
+    {% endfor %}
+
+<button class="btn btn-primary" type="submit">Submit</button>
+  <a class="btn btn-danger" href="{% url 'workrequests' %}" role="button">Cancel</a>
+</form>
+<p></p>
+<p></p>
+<script>
+function confirmDelete() {
+    return confirm('Are you sure you want to update the selected items?');
+}
+</script>
+
+{% endblock %}
