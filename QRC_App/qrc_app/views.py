@@ -7,6 +7,13 @@ from .forms import *
 from django.forms import modelformset_factory  # this is so we can have 2 forms on one page
 from django.utils import timezone
 
+# user auth stuff
+from django.contrib.auth.models import Group
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from.decorators import allowed_users
+
 
 def index(request):
     return render(request, 'qrc_app/index.html')
@@ -16,6 +23,8 @@ def forgotPassword(request):
     return render(request, 'qrc_app/forgot_password.html')
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Staff_role'])
 def deleteWorkRequests(request):
     if request.method == 'POST':
         id_list = request.POST.getlist('boxes')
@@ -40,6 +49,8 @@ def deleteWorkRequests(request):
         return render(request, 'qrc_app/index.html')
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Staff_role'])
 def createWorkRequests(request):
     # we need to have two forms in one since we want the user to be able to add images we well. 3 uploads by default
     ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=3)
@@ -50,7 +61,7 @@ def createWorkRequests(request):
         if form.is_valid() and formset.is_valid():  # need to check 2 forms now
             # save work request (dont save so we can calculate the task numher
             workRequest = form.save(commit=False)
-            workRequest.task_number = max([request.task_number for request in WorkRequest.objects.all()]) + 1
+            workRequest.task_number = max([currentRequest.task_number for currentRequest in WorkRequest.objects.all()]) + 1 if len(WorkRequest.objects.all()) > 0 else 0
             workRequest.save()
 
             # go through the images in the imageform
@@ -70,12 +81,15 @@ def createWorkRequests(request):
     # autoincrement task number by 1
     allRequests = WorkRequest.objects.all()
     taskNumbers = [request.task_number for request in allRequests]
+    taskNumbers = [0] if len(taskNumbers) == 0 else taskNumbers
     nextTaskNumber = max(taskNumbers) + 1
 
     context = {'form': form, 'formset': formset, 'nextTaskNumber': nextTaskNumber}
     return render(request, 'qrc_app/workrequests_form.html', context)
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Staff_role'])
 def updateWorkRequests(request, request_id):
     workRequest = WorkRequest.objects.get(pk=request_id)
     # this time we can delete (since we're editing)
@@ -115,6 +129,8 @@ def updateWorkRequests(request, request_id):
     return render(request, 'qrc_app/workrequests_form.html', context)
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Staff_role'])
 def closeWorkRequest(request, request_id):
     workRequest = WorkRequest.objects.get(pk=request_id)
     ImageFormSet = modelformset_factory(WorkRequestImage, form=ImageForm, extra=1)
@@ -158,9 +174,57 @@ def closeWorkRequest(request, request_id):
     return render(request, 'qrc_app/workrequests_form.html', context)
 
 
-class WorkRequestListView(generic.ListView):
+# user auth stuff
+def registerPage(request):
+    form = CreateUserForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # get user information
+
+            # get some data about the user
+            username = form.cleaned_data.get('username')
+            firstName = form.cleaned_data.get('first_name')
+            lastName = form.cleaned_data.get('last_name')
+            email = form.cleaned_data.get('email')
+            rentalGroup = form.cleaned_data.get('rental_group')
+
+            # set the variables in the model
+            # split into 2 ifs that do the same-ish thing for easy maintenance
+            if rentalGroup:
+                group = Group.objects.get(name='Rental_Group_role')
+                user.groups.add(group)
+
+                newUser = RentalGroupAccount.objects.create(user=user, )
+                newUser.name = f'{firstName.capitalize()} {lastName.capitalize()}'
+                newUser.contact_info = email
+                newUser.is_staff = False
+                newUser.is_rental_group = True
+            else:
+                group = Group.objects.get(name='Staff_role')
+                user.groups.add(group)
+
+                newUser = StaffAccount.objects.create(user=user, )
+                newUser.name = f'{firstName.capitalize()} {lastName.capitalize()}'
+                newUser.contact_info = email
+                newUser.is_staff = True
+                newUser.is_rental_group = False
+
+            newUser.is_admin = False  # admin should always be false since the "real" implemention will only let staff make accounts
+            newUser.save()
+
+            # display  a message and send to login page
+            messages.success(request, f'Account was created for {username}')
+            return redirect('login')
+
+    context = {'form': form}
+    return render(request, 'registration/register.html', context)
+
+
+class WorkRequestListView(LoginRequiredMixin, generic.ListView):
     model = WorkRequest
 
 
-class WorkRequestDetailView(generic.DetailView):
+class WorkRequestDetailView(LoginRequiredMixin, generic.DetailView):
     model = WorkRequest

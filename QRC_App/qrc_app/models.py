@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -96,10 +97,8 @@ class WorkRequest(models.Model):
     close_note = models.TextField(blank=True)
     close_date = models.DateTimeField(auto_now=True)
 
-
     # this is how you do a photo from computer in django
     # photo = models.ImageField(upload_to=f'requestPhotos/')
-
     # we acutally want to save all photos we upload for one requests so we can keep a history of them.
     # to do this use a one to many
 
@@ -124,3 +123,40 @@ class WorkRequestImage(models.Model):
     def get_absolute_url(self):
         return reverse('image-detail', args=[str(self.id)])
 
+
+class StaffAccount(models.Model):
+    name = models.CharField(max_length=200)
+    contact_info = models.CharField(max_length=200)
+    # i have a feeling these will become uneeded but just in case
+    is_staff = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+    is_rental_group = models.BooleanField(default=False)
+
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.is_staff: return f'{self.name} - Staff'
+        if self.is_admin: return f'{self.name} - Admin'
+        if self.is_rental_group: return f'{self.name} - Rental Group'
+
+    def get_absolute_url(self):
+        return reverse('image-detail', args=[str(self.id)])
+
+
+class RentalGroupAccount(models.Model):
+    name = models.CharField(max_length=200)
+    contact_info = models.CharField(max_length=200)
+    # i have a feeling these will become uneeded but just in case
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_rental_group = models.BooleanField(default=True)
+
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.is_staff: return f'{self.name} - Staff'
+        if self.is_admin: return f'{self.name} - Admin'
+        if self.is_rental_group: return f'{self.name} - Rental Group'
+
+    def get_absolute_url(self):
+        return reverse('image-detail', args=[str(self.id)])

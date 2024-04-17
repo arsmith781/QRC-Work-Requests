@@ -1,5 +1,8 @@
 from django.forms import ModelForm, Select
 from .models import *
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
 
 
 class WorkRequestForm(ModelForm):
@@ -33,3 +36,10 @@ class WorkRequestCloseForm(ModelForm):
     class Meta:
         model = WorkRequest
         fields = ('close_note', 'assigned_worker')
+
+
+class CreateUserForm(UserCreationForm):
+    rental_group = forms.BooleanField()
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'rental_group', 'username', 'email', 'password1', 'password2']
