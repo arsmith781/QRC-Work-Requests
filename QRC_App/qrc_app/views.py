@@ -43,7 +43,7 @@ def deleteWorkRequests(request):
 
         context = {"workrequest_list": workrequest_list}
 
-        return render(request, 'qrc_app/workrequest_list.html', context)
+        return redirect('workrequests')
 
     else:
         return render(request, 'qrc_app/index.html')
