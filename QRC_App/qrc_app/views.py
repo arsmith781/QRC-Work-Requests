@@ -14,6 +14,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from.decorators import allowed_users
 
+# email stuff
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 def index(request):
     return render(request, 'qrc_app/index.html')
@@ -220,6 +224,19 @@ def registerPage(request):
 
     context = {'form': form}
     return render(request, 'registration/register.html', context)
+
+
+# email stuff
+def sendEmail(request):
+    message = 'Test Message'
+    email = 'arsmith781@gmail.com'
+    returnVar = send_mail(from_email=settings.EMAIL_HOST_USER, subject='Test Subject', message=message, recipient_list=[email], fail_silently=False)
+    if returnVar == 1:  # this means an 1 email was sent:
+        messages.success(request, f'Email was sent.')
+    else:  # this means NO emails were sent
+        messages.error(request, f'Email failed to send.')
+
+    return render(request, 'qrc_app/index.html')
 
 
 class WorkRequestListView(LoginRequiredMixin, generic.ListView):

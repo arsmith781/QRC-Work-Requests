@@ -22,4 +22,7 @@ urlpatterns = [
     # User Auth Stuff
     path('accounts/', include('django.contrib.auth.urls')),  # this will include the login, logout, password_change_(reset/done)
     path('accounts/register', views.registerPage, name='register_page'),
+
+    # Email stuff
+    path('email/', views.sendEmail, name='send_email'),
 ]

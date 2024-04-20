@@ -4,11 +4,11 @@
 <!-- Replace block content in base_template.html -->
 {% block content %}
 
-<h1>Temopory view will change</h1>
-<p>Username: input box here</p>
-<p>Password: input box here</p>
-<a class="btn btn-primary" href="{% url 'workrequests'%}" role="button">Login</a>
-<a class="btn btn-danger" href="{% url 'forgot-password' %}" role="button">Forgot Password</a>
+<h1>Welcome to the QRC Work Request Submission Website</h1>
+<a class="btn btn-primary" href="{% url 'workrequests' %}" role="button">View All Work Requests</a>
+<a class="btn btn-secondary" href="#" role="button">View My Submitted Work Requests</a>
+<hr />
+<a class="btn btn-danger" href="{% url 'send_email' %}" role="button">TEMP BTN: Send Email Test</a>
 
 {% endblock %}
 
