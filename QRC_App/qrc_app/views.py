@@ -228,9 +228,11 @@ def registerPage(request):
 
 # email stuff
 def sendEmail(request):
-    message = 'Test Message'
-    email = 'arsmith781@gmail.com'
-    returnVar = send_mail(from_email=settings.EMAIL_HOST_USER, subject='Test Subject', message=message, recipient_list=[email], fail_silently=False)
+    testMessage = 'Test Message'
+    testReceiveEmail = 'arsmith781@gmail.com'
+    testSubject = 'Test Subject'
+
+    returnVar = send_mail(from_email=settings.EMAIL_HOST_USER, subject=testSubject, message=testMessage, recipient_list=[testReceiveEmail], fail_silently=False)
     if returnVar == 1:  # this means an 1 email was sent:
         messages.success(request, f'Email was sent.')
     else:  # this means NO emails were sent
